@@ -3,8 +3,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserController } from './user/user.controller';
-import { UserSchema } from './schema/user.schema';
-import { UserService } from './user/user.service';
 import { CategorySchema } from './schema/categorie.schema';
 import { CategoryService } from './category/category.service';
 import { CategoryController } from './category/category.controller';
@@ -28,30 +26,34 @@ import { ErrorSchema } from './schema/error.schema';
 import { CodeService } from './code/code.service';
 import { CodeController } from './code/code.controller';
 import { CodeSchema } from './schema/code.schema';
+import { TagModule } from './tag/tag.module';
+import { SubjectModule } from './subject/subject.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://127.0.0.1:27017/userdb'),
     MongooseModule.forFeature([
-      { name: 'User', schema: UserSchema },
       { name: 'Category', schema: CategorySchema },
-      { name: 'Subject', schema: SubjectSchema },
       { name: 'Badge', schema: BadgeSchema },
       { name: 'Solution', schema: SolutionSchema },
       { name: 'Article', schema: ArticleSchema },
-      { name: 'Error', schema: ErrorSchema },
       { name: 'Error', schema: ErrorSchema },
       { name: 'Code', schema: CodeSchema },
     ]),
     UserModule,
     AuthModule,
+    TagModule,
+    SubjectModule,
+    MulterModule.register({
+      dest: './uploads', // Specify the destination folder for uploaded files
+    }),
   ],
 
   controllers: [
     AppController,
     UserController,
     CategoryController,
-    SubjectController,
     BadgeController,
     SolutionController,
     ArticleController,
@@ -60,9 +62,7 @@ import { CodeSchema } from './schema/code.schema';
   ],
   providers: [
     AppService,
-    UserService,
     CategoryService,
-    SubjectService,
     BadgeService,
     SolutionService,
     ArticleService,
