@@ -26,6 +26,8 @@ export class User {
   password: string;
   @Prop({ type: String, enum: UserRole, default: UserRole.DEV })
   role: UserRole;
+  @Prop({ type: String })
+  image: string;
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Badge' }] })
   badges: IBadge[];

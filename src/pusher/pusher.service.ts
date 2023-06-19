@@ -16,4 +16,6 @@ export class PusherService {
   async trigger(channel: string, event: string, data: any) {
     await this.pusher.trigger(channel, event, data);
   }
+
+  
 }

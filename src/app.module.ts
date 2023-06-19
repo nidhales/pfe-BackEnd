@@ -32,6 +32,9 @@ import { SubjectController } from './subject/subject.controller';
 import { SubjectService } from './subject/subject.service';
 import { PusherController } from './pusher/pusher.controller';
 import { PusherService } from './pusher/pusher.service';
+import { ChatService } from './chat/chat.service';
+import { ChatController } from './chat/chat.controller';
+import { ChatSchema } from './schema/chat.schema';
 
 @Module({
   imports: [
@@ -46,6 +49,8 @@ import { PusherService } from './pusher/pusher.service';
       { name: 'Category', schema: CategorySchema },
       { name: 'Error', schema: ErrorSchema },
       { name: 'Subject', schema: SubjectSchema },
+      { name: 'Chat', schema: ChatSchema },
+
       // { name: 'Notification', schema: NotificationSchema },
     ]),
     AuthModule,
@@ -63,6 +68,7 @@ import { PusherService } from './pusher/pusher.service';
     CategoryController,
     SubjectController,
     PusherController,
+    ChatController,
   ],
   providers: [
     AppService,
@@ -76,6 +82,7 @@ import { PusherService } from './pusher/pusher.service';
     CategoryService,
     SubjectService,
     PusherService,
+    ChatService,
   ],
 })
 export class AppModule {}

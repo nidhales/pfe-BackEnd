@@ -139,4 +139,21 @@ export class UserController {
       return { message: 'Error adding solution', error };
     }
   }
+
+  @Post(':id/image')
+  async updateUserImage(
+    @Param('id') userId: string,
+    @Body('imageUrl') imageUrl: string,
+  ) {
+    try {
+      const updatedUser = await this.userService.updateUserImage(
+        userId,
+        imageUrl,
+      );
+      return updatedUser;
+    } catch (error) {
+      // Handle any errors
+      throw new Error('Failed to update user image');
+    }
+  }
 }
