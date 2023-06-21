@@ -7,8 +7,8 @@ import { Article } from './article.schema';
 import { IArticle } from 'src/interface/article.interface';
 import { Code } from './code.schema';
 export enum UserRole {
-  ADMIN = 'admin',
-  DEV = 'dev',
+  ADMIN = 'Admin',
+  DEV = 'Developper',
 }
 export type UserDocument = User & Document;
 

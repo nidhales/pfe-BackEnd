@@ -6,12 +6,14 @@ import { UpdateSolutionDto } from 'src/dto/update-solution.dto';
 import { IError } from 'src/interface/error.interface';
 import { ISolution } from 'src/interface/solution.interface';
 import { Solution } from 'src/schema/solution.schema';
+import { User } from 'src/schema/user.schema';
 
 @Injectable()
 export class SolutionService {
   constructor(
     @InjectModel('Solution') private solutionModel: Model<Solution>,
     @InjectModel('Error') private errorModel: Model<IError>,
+    @InjectModel('User') private userModel: Model<User>,
   ) {}
 
   // async createSolution(createSolutionDto: CreateSolutionDto):Promise <ISolution> {
@@ -70,15 +72,20 @@ export class SolutionService {
   }
 
   async addSolutionToError(
+    userId: string,
     errorId: string,
     solutionData: any,
   ): Promise<Solution> {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
     const error = await this.errorModel.findById(errorId);
     if (!error) {
       throw new Error('Error not found');
     }
-
     const solution = new this.solutionModel({
+      user:  user._id,
       error: error._id,
       score: solutionData.score,
       code: solutionData.code,

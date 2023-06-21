@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
+import { User } from './user.schema';
 
 @Schema()
 export class Solution extends Document {
@@ -11,6 +12,8 @@ export class Solution extends Document {
 
   @Prop()
   guide: string;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  user: User;
   error: { type: mongoose.Schema.Types.ObjectId; ref: 'Error' };
 }
 

@@ -53,6 +53,8 @@ import { ChatSchema } from './schema/chat.schema';
 
       // { name: 'Notification', schema: NotificationSchema },
     ]),
+
+
     AuthModule,
   ],
 

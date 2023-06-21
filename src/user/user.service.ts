@@ -12,11 +12,11 @@ import { UpdateUserDto } from 'src/dto/update-user.dto';
 import { UserRoleDto } from 'src/dto/update-userRole.dto';
 import { JwtPayload } from 'src/auth/guards/JwtPayload';
 import { Badge } from 'src/schema/badge.schema';
-import { Errors } from 'src/schema/error.schema';
 import { Article } from 'src/schema/article.schema';
-import { IArticle } from 'src/interface/article.interface';
 import { Code } from 'src/schema/code.schema';
 import { hash } from 'bcrypt';
+import { Errors } from 'src/schema/error.schema';
+import { Solution } from 'src/schema/solution.schema';
 @Injectable()
 export class UserService {
   constructor(
@@ -25,6 +25,7 @@ export class UserService {
     @InjectModel('Error') private errorModel: Model<Errors>,
     @InjectModel('Article') private articleModel: Model<Article>,
     @InjectModel('Code') private codeModel: Model<Code>,
+    @InjectModel('Solution') private solutionModel: Model<Solution>,
   ) {}
   async createUser(
     FirstName: String,
@@ -43,22 +44,27 @@ export class UserService {
     return newUser.save();
   }
 
-  async getUserById(id: string): Promise<UserDetails | null> {
+  async getUserById(id: string): Promise<UserDocument | null> {
     const user = await this.userModel
       .findById(id)
       .populate('badges')
+      .populate('codes')
       .populate({
         path: 'errors',
         populate: {
           path: 'solutions',
           model: 'Solution',
+          populate: {
+            path: 'user',
+            model: 'User',
+          },
         },
       })
       .exec();
 
     if (!user) return null;
 
-    return this._getUserDetails(user);
+    return user;
   }
 
   async getUserByEmail(email: string): Promise<UserDocument | null> {
@@ -100,13 +106,6 @@ export class UserService {
       .populate('badges')
       .populate('articles')
       .populate('codes')
-      .populate({
-        path: 'errors',
-        populate: {
-          path: 'solutions',
-          model: 'Solution',
-        },
-      })
       .exec();
     return userData;
   }
@@ -118,12 +117,9 @@ export class UserService {
     const { password, ...rest } = updateUserDto;
 
     if (password) {
-      // Hash the new password
       const hashedPassword = await hash(password, 10);
-      // Update the password field in the DTO with the hashed password
       updateUserDto.password = hashedPassword;
     }
-
     const existingUser = await this.userModel.findByIdAndUpdate(
       userId,
       updateUserDto,
@@ -133,7 +129,6 @@ export class UserService {
     if (!existingUser) {
       throw new NotFoundException(`User #${userId} not found!`);
     }
-
     return existingUser;
   }
 
@@ -204,6 +199,38 @@ export class UserService {
 
     return error;
   }
+
+  async addSolutionToUser(
+    userId: string,
+    solutionData: any,
+  ): Promise<Solution> {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new Error('Error not found');
+    }
+
+    const solution = new this.solutionModel({
+      user: user.id,
+      guide: solutionData.guide,
+      code: solutionData.code,
+    });
+
+    user.errors.push(solution._id);
+    await user.save();
+    await solution.save();
+
+    return solution;
+  }
+  async getErrorsByUserId(userId: string): Promise<Errors[]> {
+    const user = await this.userModel.findById(userId).exec();
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const errors = await this.errorModel.find({ user: user._id }).exec();
+    return errors;
+  }
+
   async addArticleToUser(userId: string, articleData: any): Promise<Article> {
     const user = await this.userModel.findById(userId);
     if (!user) {
@@ -243,25 +270,44 @@ export class UserService {
     return code;
   }
 
-  async updateUserImage(userId: string, imageUrl: string): Promise<UserDocument> {
-  try {
-    // Retrieve the user from the database
-    const user = await this.userModel.findById(userId);
+  async updateUserImage(
+    userId: string,
+    imageUrl: string,
+  ): Promise<UserDocument> {
+    try {
+      // Retrieve the user from the database
+      const user = await this.userModel.findById(userId);
 
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      // Update the image field
+      user.image = imageUrl;
+
+      // Save the updated user
+      const updatedUser = await user.save();
+
+      return updatedUser;
+    } catch (error) {
+      // Handle any errors
+      throw new Error('Failed to update user image');
+    }
+  }
+
+  async deleteErrorFromUser(userId: string, errorId: string): Promise<void> {
+    const user = await this.userModel.findById(userId);
     if (!user) {
       throw new Error('User not found');
     }
+    const errorIndex = user.errors.findIndex(
+      (error) => error.toString() === errorId,
+    );
 
-    // Update the image field
-    user.image = imageUrl;
-
-    // Save the updated user
-    const updatedUser = await user.save();
-
-    return updatedUser;
-  } catch (error) {
-    // Handle any errors
-    throw new Error('Failed to update user image');
+    if (errorIndex === -1) {
+      throw new Error('Error not found in user');
+    }
+    user.errors.splice(errorIndex);
+    await user.save();
   }
-}
 }

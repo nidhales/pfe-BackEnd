@@ -3,6 +3,7 @@ import mongoose, { Document } from 'mongoose';
 import { ICategory } from 'src/interface/category.interface';
 import { ISolution } from 'src/interface/solution.interface';
 import { ITag } from 'src/interface/tag.interface';
+import { User } from './user.schema';
 
 @Schema()
 export class Errors extends Document {
@@ -20,6 +21,8 @@ export class Errors extends Document {
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }] })
   categories: ICategory[];
-}
 
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  user: User;
+}
 export const ErrorSchema = SchemaFactory.createForClass(Errors);

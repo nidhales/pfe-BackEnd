@@ -15,8 +15,7 @@ import { UpdateSolutionDto } from 'src/dto/update-solution.dto';
 import { SolutionService } from 'src/solution/solution.service';
 @Controller('solution')
 export class SolutionController {
-  constructor(private readonly solutionService: SolutionService,
-    ) {}
+  constructor(private readonly solutionService: SolutionService) {}
 
   @Put('/:id')
   async updateSolution(
@@ -85,13 +84,15 @@ export class SolutionController {
     return this.solutionService.createSolution(solutionDto);
   }
 
-  @Post(':errorId/solutions')
+  @Post('/:userId/:errorId/solutions')
   async addSolutionToError(
+    @Param('userId') userId: string,
     @Param('errorId') errorId: string,
     @Body() solutionData: any,
   ) {
     try {
       const solution = await this.solutionService.addSolutionToError(
+        userId,
         errorId,
         solutionData,
       );

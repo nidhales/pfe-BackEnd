@@ -2,7 +2,6 @@ import { UserRole } from 'src/schema/user.schema';
 import { IBadge } from './badge.interface';
 import mongoose from 'mongoose';
 import { IArticle } from './article.interface';
-import { ICode } from './code.interface';
 import { Code } from 'src/schema/code.schema';
 
 export interface UserDetails {

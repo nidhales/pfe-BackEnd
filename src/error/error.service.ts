@@ -7,12 +7,14 @@ import { ICategory } from 'src/interface/category.interface';
 import { IError } from 'src/interface/error.interface';
 import { Category } from 'src/schema/categorie.schema';
 import { Errors } from 'src/schema/error.schema';
+import { User } from 'src/schema/user.schema';
 
 @Injectable()
 export class ErrorService {
   constructor(
     @InjectModel('Error') private errorModel: Model<IError>,
     @InjectModel('Category') private categoryModel: Model<Category>,
+    @InjectModel('User') private userModel: Model<User>,
   ) {}
 
   async updateError(
@@ -33,8 +35,17 @@ export class ErrorService {
   async getAllErrors(): Promise<Errors[]> {
     const errorData = await this.errorModel
       .find()
-      .populate('solutions')
+      .populate({
+        path: 'solutions',
+        populate: {
+          path: 'user',
+          model: 'User',
+        },
+      })
       .populate('tags')
+      .populate('categories')
+      .populate('user')
+
       .exec();
     return errorData;
   }

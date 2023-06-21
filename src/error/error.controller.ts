@@ -50,19 +50,6 @@ export class ErrorController {
     }
   }
 
-  // @Get('/:id')
-  // async getError(@Res() response, @Param('id') errorId: string) {
-  //   try {
-  //     const existingError = await this.errorService.getErrorById(errorId);
-  //     return response.status(HttpStatus.OK).json({
-  //       message: 'error found successfully',
-  //       existingError,
-  //     });
-  //   } catch (err) {
-  //     return response.status(err.status).json(err.response);
-  //   }
-  // }
-
   @Delete('/:id')
   async deleteError(@Res() response, @Param('id') errorId: string) {
     try {
@@ -106,4 +93,5 @@ export class ErrorController {
     const errors = await this.errorService.findByName(name);
     return errors;
   }
+
 }

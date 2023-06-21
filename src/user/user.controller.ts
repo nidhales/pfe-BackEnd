@@ -18,8 +18,7 @@ import { UserService } from 'src/user/user.service';
 import { UserRoleDto } from 'src/dto/update-userRole.dto';
 import { JwtPayload } from 'src/auth/guards/JwtPayload';
 import { JwtGaurd } from 'src/auth/guards/jwt.guard';
-import { User, UserRole } from 'src/schema/user.schema';
-import { Badge } from 'src/schema/badge.schema';
+import { UserRole } from 'src/schema/user.schema';
 
 @Controller('user')
 export class UserController {
@@ -113,7 +112,21 @@ export class UserController {
       return { message: 'Error adding solution', error };
     }
   }
-
+  @Post(':userId/solution')
+  async addSolutionToUser(
+    @Param('userId') userId: string,
+    @Body() userData: any,
+  ) {
+    try {
+      const solutions = await this.userService.addSolutionToUser(
+        userId,
+        userData,
+      );
+      return { message: 'Solution added successfully', solutions };
+    } catch (error) {
+      return { message: 'Error adding solution', error };
+    }
+  }
   @Post(':userId/article')
   async addArticleToUser(
     @Param('userId') userId: string,
@@ -154,6 +167,23 @@ export class UserController {
     } catch (error) {
       // Handle any errors
       throw new Error('Failed to update user image');
+    }
+  }
+  @Get('user/:userId')
+  async getErrorsByUserId(@Param('userId') userId: string) {
+    const errors = await this.userService.getErrorsByUserId(userId);
+    return errors;
+  }
+  @Delete(':userId/errors/:errorId')
+  async deleteErrorFromUser(
+    @Param('userId') userId: string,
+    @Param('errorId') errorId: string,
+  ) {
+    try {
+      await this.userService.deleteErrorFromUser(userId, errorId);
+      return { message: 'Error deleted from user successfully' };
+    } catch (error) {
+      return { message: 'Error deleting error from user', error };
     }
   }
 }
