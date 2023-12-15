@@ -6,4 +6,3 @@ export class Subject {
   subjectName: string;
 }
 export const SubjectSchema = SchemaFactory.createForClass(Subject);
-

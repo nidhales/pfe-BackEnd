@@ -275,22 +275,14 @@ export class UserService {
     imageUrl: string,
   ): Promise<UserDocument> {
     try {
-      // Retrieve the user from the database
       const user = await this.userModel.findById(userId);
-
       if (!user) {
         throw new Error('User not found');
       }
-
-      // Update the image field
       user.image = imageUrl;
-
-      // Save the updated user
       const updatedUser = await user.save();
-
       return updatedUser;
     } catch (error) {
-      // Handle any errors
       throw new Error('Failed to update user image');
     }
   }

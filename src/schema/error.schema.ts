@@ -4,6 +4,7 @@ import { ICategory } from 'src/interface/category.interface';
 import { ISolution } from 'src/interface/solution.interface';
 import { ITag } from 'src/interface/tag.interface';
 import { User } from './user.schema';
+import { Subject } from './subject.schema';
 
 @Schema()
 export class Errors extends Document {
@@ -24,5 +25,8 @@ export class Errors extends Document {
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   user: User;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Subject' })
+  subject: Subject;
 }
 export const ErrorSchema = SchemaFactory.createForClass(Errors);

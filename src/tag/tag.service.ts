@@ -62,17 +62,13 @@ export class TagService {
     if (!error) {
       throw new Error('Error not found');
     }
-
     const tag = new this.tagModel({
       error: error._id,
       TagName: tagData.TagName,
-      // Set other solution properties
     });
-
     error.tags.push(tag._id);
     await error.save();
     await tag.save();
-
     return tag;
   }
 }

@@ -1,14 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document, Types } from 'mongoose';
 import { IBadge } from 'src/interface/badge.interface';
-import { IError } from 'src/interface/error.interface';
 import { Errors } from './error.schema';
 import { Article } from './article.schema';
-import { IArticle } from 'src/interface/article.interface';
 import { Code } from './code.schema';
 export enum UserRole {
   ADMIN = 'Admin',
   DEV = 'Developper',
+}
+export enum UserBadge {
+  EXPERT = 'Expert',
+  BEGINNER = 'Beginner',
+  Intermediate = 'Intermediate',
 }
 export type UserDocument = User & Document;
 
@@ -28,6 +31,8 @@ export class User {
   role: UserRole;
   @Prop({ type: String })
   image: string;
+  @Prop({ type: String, enum: UserBadge, default: UserBadge.BEGINNER })
+  badge: UserBadge;
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Badge' }] })
   badges: IBadge[];
